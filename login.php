@@ -10,13 +10,12 @@ session_set_cookie_params([
 session_start();
 
 // 1) Koneksi
-$DB_HOST = "sql106.infinityfree.com";
-$DB_USER = "if0_39628444";
-$DB_PASS = "yQkJsf8Vqf6FOl";
-$DB_NAME = "if0_39628444_andhika";
-$koneksi = @mysqli_connect($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
-if (!$koneksi) { error_log("DB connect error: ".mysqli_connect_error()); header('Location: login.html?error=server'); exit; }
-mysqli_set_charset($koneksi, 'utf8mb4');
+require 'koneksi.php';
+if (!$koneksi || $koneksi->connect_errno) {
+  error_log("DB connect error: " . ($koneksi ? $koneksi->connect_error : ''));
+  header('Location: login.html?error=server');
+  exit;
+}
 
 // 2) Validasi request
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['login'])) { header('Location: login.html'); exit; }
