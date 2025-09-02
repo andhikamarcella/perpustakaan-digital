@@ -10,10 +10,10 @@ session_set_cookie_params([
 session_start();
 
 // 1) Koneksi
-$DB_HOST = "sql106.infinityfree.com";
-$DB_USER = "if0_39628444";
-$DB_PASS = "yQkJsf8Vqf6FOl";
-$DB_NAME = "if0_39628444_andhika";
+$DB_HOST = getenv('DB_HOST');
+$DB_USER = getenv('DB_USER');
+$DB_PASS = getenv('DB_PASS');
+$DB_NAME = getenv('DB_NAME');
 $koneksi = @mysqli_connect($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 if (!$koneksi) { error_log("DB connect error: ".mysqli_connect_error()); header('Location: login.html?error=server'); exit; }
 mysqli_set_charset($koneksi, 'utf8mb4');
