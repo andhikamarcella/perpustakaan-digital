@@ -4,6 +4,10 @@ session_start();
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 date_default_timezone_set('Asia/Jakarta');
 
+if (empty($_SESSION['csrf_token'])) {
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 function back($msg){
   // kirim error balik ke form
   $msg = urlencode($msg);
@@ -15,6 +19,10 @@ try {
   if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['submit'])) {
     header("Location: form_register.html");
     exit;
+  }
+
+  if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    back('Token CSRF tidak valid.');
   }
 
   // ===== 1) Koneksi DB =====

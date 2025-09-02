@@ -1,5 +1,8 @@
 <?php
 session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 require 'koneksi.php';
 
 if (!isset($_SESSION['email'])) {
@@ -25,43 +28,47 @@ $progress = ($filled / count($fields)) * 100;
 $status = '';
 
 if (isset($_POST['update'])) {
-    $nisn = $_POST['nisn'];
-    $nama = $_POST['nama'];
-    $emailBaru = $_POST['email'];
-    $password = $_POST['password'];
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $status = 'token_invalid';
+    } else {
+        $nisn = $_POST['nisn'];
+        $nama = $_POST['nama'];
+        $emailBaru = $_POST['email'];
+        $password = $_POST['password'];
 
-    // Upload foto
-    $foto = $user['foto'];
-    if (!empty($_FILES['foto']['name'])) {
-        $targetDir = "uploads/";
-        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
-        $fileName = time() . "_" . basename($_FILES["foto"]["name"]);
-        $targetFilePath = $targetDir . $fileName;
-        $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-        $allowTypes = ['jpg', 'jpeg', 'png', 'gif'];
+        // Upload foto
+        $foto = $user['foto'];
+        if (!empty($_FILES['foto']['name'])) {
+            $targetDir = "uploads/";
+            if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+            $fileName = time() . "_" . basename($_FILES["foto"]["name"]);
+            $targetFilePath = $targetDir . $fileName;
+            $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+            $allowTypes = ['jpg', 'jpeg', 'png', 'gif'];
 
-        if (!in_array($fileType, $allowTypes)) {
-            $status = 'format_salah';
-        } elseif ($_FILES['foto']['size'] > 2*1024*1024) {
-            $status = 'ukuran_besar';
-        } else {
-            if (move_uploaded_file($_FILES["foto"]["tmp_name"], $targetFilePath)) {
-                $foto = $fileName;
+            if (!in_array($fileType, $allowTypes)) {
+                $status = 'format_salah';
+            } elseif ($_FILES['foto']['size'] > 2*1024*1024) {
+                $status = 'ukuran_besar';
             } else {
-                $status = 'upload_gagal';
+                if (move_uploaded_file($_FILES["foto"]["tmp_name"], $targetFilePath)) {
+                    $foto = $fileName;
+                } else {
+                    $status = 'upload_gagal';
+                }
             }
         }
-    }
 
-    if ($status == '') {
-        $stmtUpdate = $koneksi->prepare("UPDATE regiss SET nisn=?, nama=?, email=?, password=?, foto=? WHERE email=?");
-        $stmtUpdate->bind_param("ssssss", $nisn, $nama, $emailBaru, $password, $foto, $email);
+        if ($status == '') {
+            $stmtUpdate = $koneksi->prepare("UPDATE regiss SET nisn=?, nama=?, email=?, password=?, foto=? WHERE email=?");
+            $stmtUpdate->bind_param("ssssss", $nisn, $nama, $emailBaru, $password, $foto, $email);
 
-        if ($stmtUpdate->execute()) {
-            $_SESSION['email'] = $emailBaru;
-            $status = 'sukses';
-        } else {
-            $status = 'gagal';
+            if ($stmtUpdate->execute()) {
+                $_SESSION['email'] = $emailBaru;
+                $status = 'sukses';
+            } else {
+                $status = 'gagal';
+            }
         }
     }
 }
@@ -140,6 +147,7 @@ body {
             </div>
 
             <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <div class="mb-3">
                     <label class="form-label">Foto Profil</label>
                     <input type="file" name="foto" class="form-control" accept="image/*" onchange="previewImage(event)">
@@ -194,6 +202,8 @@ function previewImage(event) {
         Swal.fire('Ukuran Terlalu Besar!', 'Maksimal ukuran file 2MB.', 'warning');
     <?php elseif ($status == 'upload_gagal'): ?>
         Swal.fire('Gagal Upload!', 'Terjadi kesalahan saat mengunggah foto.', 'error');
+    <?php elseif ($status == 'token_invalid'): ?>
+        Swal.fire('Gagal!', 'Token CSRF tidak valid.', 'error');
     <?php endif; ?>
 <?php endif; ?>
 </script>
