@@ -54,8 +54,14 @@ if (isset($_POST['update'])) {
     }
 
     if ($status == '') {
+        if (!empty($password)) {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        } else {
+            $hashedPassword = $user['password'];
+        }
+
         $stmtUpdate = $koneksi->prepare("UPDATE regiss SET nisn=?, nama=?, email=?, password=?, foto=? WHERE email=?");
-        $stmtUpdate->bind_param("ssssss", $nisn, $nama, $emailBaru, $password, $foto, $email);
+        $stmtUpdate->bind_param("ssssss", $nisn, $nama, $emailBaru, $hashedPassword, $foto, $email);
 
         if ($stmtUpdate->execute()) {
             $_SESSION['email'] = $emailBaru;
@@ -158,7 +164,7 @@ body {
                 </div>
                 <div class="mb-3 input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" id="password" name="password" value="<?php echo htmlspecialchars($user['password']); ?>" class="form-control" required>
+                    <input type="password" id="password" name="password" class="form-control">
                     <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()"><i class="fas fa-eye"></i></button>
                 </div>
                 <button type="submit" name="update" class="btn btn-custom w-100">💾 Simpan Perubahan</button>
