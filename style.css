@@ -1,0 +1,82 @@
+body {
+    background-color: #6495ED;
+}
+h1 {
+    text-align: center;
+    color: white;
+    font-family: 'Varela Round', sans-serif;
+}
+
+form {
+    margin: 0 auto;
+    width: 300px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: 'Varela Round', sans-serif;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-family: 'Varela Round', sans-serif;
+}
+
+input {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-family: 'Varela Round', sans-serif;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #6495ED;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4169E1;
+}
+
+form h5 a {
+    color: #4CAF50;
+    text-decoration: none;
+  }
+
+  .password-input {
+    display: flex;
+    align-items: center;
+}
+
+input[type="password"] {
+    flex: 1;
+    padding-right: 35px; /* Ruang untuk ikon mata */
+}
+
+button#togglePassword {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+#togglePassword {
+    color: #4CAF50;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    position: relative;
+    top: -4px;
+}
