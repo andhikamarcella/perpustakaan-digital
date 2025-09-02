@@ -3,8 +3,6 @@ include 'time_check.php';
 date_default_timezone_set("Asia/Jakarta");
 $hour = date('H');
 
-session_start();
-
 $current_file = basename($_SERVER['PHP_SELF']); // ambil nama file sekarang
 
 // Kalau bukan login/logout & belum ada allow_after_hours & jam di luar range → redirect
