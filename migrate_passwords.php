@@ -1,9 +1,9 @@
 <?php
 // migrate_passwords.php
-$DB_HOST = "sql106.infinityfree.com";
-$DB_USER = "if0_39628444";
-$DB_PASS = "yQkJsf8Vqf6FOl";
-$DB_NAME = "if0_39628444_andhika";
+$DB_HOST = getenv('DB_HOST');
+$DB_USER = getenv('DB_USER');
+$DB_PASS = getenv('DB_PASS');
+$DB_NAME = getenv('DB_NAME');
 
 $k = mysqli_connect($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 if (!$k) { die("DB error: ".mysqli_connect_error()); }
