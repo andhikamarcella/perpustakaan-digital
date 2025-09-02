@@ -1,6 +1,8 @@
 <?php
 date_default_timezone_set("Asia/Jakarta");
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $hour = date('H');
 $current_file = basename($_SERVER['PHP_SELF']);
