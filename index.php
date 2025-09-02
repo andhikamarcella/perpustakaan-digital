@@ -4,6 +4,9 @@ date_default_timezone_set("Asia/Jakarta");
 $hour = date('H');
 
 session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 $current_file = basename($_SERVER['PHP_SELF']); // ambil nama file sekarang
 
@@ -41,6 +44,9 @@ if (!isset($_SESSION['login_time'])) {
 
 // Kirim rating
 if (isset($_POST['send_rating'])) {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die('Token CSRF tidak valid.');
+    }
     $bookTitle = $_POST['book_title'];
     $rating = $_POST['rating'];
     $to = "dhikaccp@gmail.com";
@@ -53,6 +59,9 @@ if (isset($_POST['send_rating'])) {
 
 // Kirim masukan & saran (hanya teks)
 if (isset($_POST['send_feedback'])) {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die('Token CSRF tidak valid.');
+    }
     $sarann = mysqli_real_escape_string($koneksi, $_POST['feedback']);
 
     if (!empty($sarann)) {
@@ -420,6 +429,7 @@ if (isset($_POST['send_feedback'])) {
 
                 <!-- Rating -->
                 <form method="POST" class="mt-3">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <input type="hidden" name="book_title" id="ratingBookTitle">
                     <div class="rating-stars mb-2">
                         <i class="fas fa-star" data-value="1"></i>
@@ -448,6 +458,7 @@ if (isset($_POST['send_feedback'])) {
 <div class="container my-4">
     <h4>Kirim Masukan & Saran</h4>
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <textarea class="form-control mb-2" name="feedback" rows="3" placeholder="Tulis saran kamu..."></textarea>
         <button type="submit" name="send_feedback" class="btn btn-primary">Kirim</button>
     </form>

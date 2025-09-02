@@ -177,6 +177,7 @@ body {
       </div>
 
       <form id="registerForm" action="register.php" method="post" enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="csrf_token" id="csrfToken">
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label" for="nisn">NISN</label>
@@ -327,6 +328,10 @@ const avatar = document.getElementById('avatar');
 const dropzone = document.getElementById('dropzone');
 const pickBtn = document.getElementById('pickBtn');
 const clearBtn = document.getElementById('clearBtn');
+
+fetch('csrf_token.php')
+  .then(r => r.text())
+  .then(token => { document.getElementById('csrfToken').value = token.trim(); });
 
 /* ============== NISN numeric & panjang ============== */
 nisn.addEventListener('input', ()=>{
